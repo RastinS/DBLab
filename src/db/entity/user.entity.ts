@@ -11,6 +11,8 @@ export default class UserEntity extends BaseEntity {
   name: string;
 
   // 1:n relation with bookEntity 
-  @OneToMany( type => BookEntity , book => book.user)
+  @OneToMany( type => BookEntity , book => book.user, {
+    onDelete: "CASCADE"
+  })
   books: BookEntity[];
 }

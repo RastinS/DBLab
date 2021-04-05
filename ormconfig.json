@@ -1,11 +1,15 @@
 {
-    "type": "sqlite",
-    "database": "./database.sqlite",
-    "synchronize": "true",
-    "entities": [
-      "dist/db/entity/**/*.js"
-    ],
-    "cli": {
-      "entitiesDir": "src/db/entity"
-    }
+  "type": "postgres",
+  "host": "localhost",
+  "port": 5432,
+  "username": "postgres",
+  "password": "Rssorsso3011",
+  "database": "DBLAB-4",
+  "synchronize": "true",
+  "entities": [
+    "dist/db/entity/**/*.js"
+  ],
+  "cli": {
+    "entitiesDir": "src/db/entity"
   }
+}
