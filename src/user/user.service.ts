@@ -9,8 +9,9 @@ export class UserServices {
 
   async insert(userDetails: CreateUserDto): Promise<UserEntity> {
     const userEntity: UserEntity = UserEntity.create();
-    const {name } = userDetails;
-    userEntity.name = name;
+    const {username, password} = userDetails;
+    userEntity.username = username;
+    userEntity.password = password;
     await UserEntity.save(userEntity);
     return userEntity;
   }
@@ -31,7 +32,12 @@ export class UserServices {
 
   async editUser(userID: number, userDetails: CreateUserDto) {
     const user: UserEntity = await UserEntity.findOne({where: {id: userID}});
-    user.name = userDetails.name;
+    user.username = userDetails.username;
     return await UserEntity.update(userID, user)
+  }
+
+  async findUserForAuth(userID: number): Promise<UserEntity> {
+    const user: UserEntity = await UserEntity.findOne({where: {id: userID}});
+    return user;
   }
 }

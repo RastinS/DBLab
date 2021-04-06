@@ -1,7 +1,9 @@
-import { Body, Controller, Get, Post, Delete, Param, ParseIntPipe, Put } from '@nestjs/common';
+import { Body, Controller, Get, Post, Delete, Param, ParseIntPipe, Put, UseGuards } from '@nestjs/common';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import BooksService from './books.service';
 import CreateBooksDto from './dto/create-book.dto';
 
+@UseGuards(JwtAuthGuard)
 @Controller('book')
 export default class BooksController {
   constructor(private readonly booksServices: BooksService) {}

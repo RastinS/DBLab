@@ -8,7 +8,10 @@ export default class UserEntity extends BaseEntity {
   id: number;
 
   @Column({ length: 500 })
-  name: string;
+  username: string;
+
+  @Column({ length: 500 })
+  password: string;
 
   // 1:n relation with bookEntity 
   @OneToMany( type => BookEntity , book => book.user, {

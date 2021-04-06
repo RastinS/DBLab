@@ -1,4 +1,5 @@
-import { Body, Controller, Delete, Get, ParseIntPipe, Post, Put, Param } from '@nestjs/common';
+import { Body, Controller, Delete, Get, ParseIntPipe, Post, Put, Param, UseGuards } from '@nestjs/common';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { UserServices } from './user.service';
 import CreateUserDto from './dto/create-user.dto';
 
@@ -12,23 +13,27 @@ export class UserController {
     return this.usersServices.insert(user);
   }
 // 'getAll()' returns the list of all the existing users in the database
+  @UseGuards(JwtAuthGuard)
   @Get()
   getAll() {
     return this.usersServices.getAllUsers();
   }
 
 //'getBooks()' return all the books which are associated with the user 
-// provided through 'userID' by the request  
+// provided through 'userID' by the request
+  @UseGuards(JwtAuthGuard)
   @Get('books')
   getBooks( @Body('userID', ParseIntPipe) userID: number ) {
     return this.usersServices.getBooksOfUser(userID);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Delete('delete/:id')
   deleteUser( @Param('id', ParseIntPipe) userID: number) {
     return this.usersServices.deleteUser(userID);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Put('put/:id')
   edituser(@Body() userDetails: CreateUserDto, @Param('id', ParseIntPipe) userID: number) {
     return this.usersServices.editUser(userID, userDetails)
