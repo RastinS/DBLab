@@ -1,7 +1,8 @@
-import { Entity, PrimaryGeneratedColumn, Column, BaseEntity, OneToMany } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, BaseEntity, OneToMany, OneToOne } from 'typeorm';
 import BookEntity from './book.entity';
 import BlogPostEntity from './blogPost.entity';
 import { Role } from '../../enums/role.enum'
+import ResumeEntity from './resume.entity';
 
 @Entity()
 export default class UserEntity extends BaseEntity {
@@ -30,8 +31,9 @@ export default class UserEntity extends BaseEntity {
   })
   books: BookEntity[];
 
-  @OneToMany( type => BlogPostEntity, post => post.publisher, {
-    onDelete: "CASCADE"
-  })
+  @OneToMany( type => BlogPostEntity, post => post.publisher)
   posts: BlogPostEntity[];
+
+  @OneToOne(() => ResumeEntity, resume => resume.isFor) // specify inverse side as a second parameter
+    resume: ResumeEntity;
 }

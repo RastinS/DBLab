@@ -1,9 +1,11 @@
 import { Injectable, Post } from '@nestjs/common';
 import BlogPostEntity from 'src/db/entity/blogPost.entity';
 import ProjectEntity from 'src/db/entity/project.entity';
+import ResumeEntity from 'src/db/entity/resume.entity';
 import UserEntity from 'src/db/entity/user.entity';
 import CreateBlogPostDto from './dto/create-blogPost.dto'
 import CreateProjectDto from './dto/create-Project.dto';
+import CreateResumeDto from './dto/create-resume.dto';
 import EditBlogPostDto from './dto/edit-blogPost.dto';
 
 
@@ -11,9 +13,9 @@ import EditBlogPostDto from './dto/edit-blogPost.dto';
 export class JobseekersService {
     
     // Blog Post Operations
-    async addBlogPost(blogPostDetail: CreateBlogPostDto, user: any) {
+    async addBlogPost(blogPostDetails: CreateBlogPostDto, user: any) {
         const blogPost: BlogPostEntity = BlogPostEntity.create();
-        const {title, date, text} = blogPostDetail;
+        const {title, date, text} = blogPostDetails;
 
         blogPost.title = title;
         blogPost.date = date;
@@ -23,10 +25,10 @@ export class JobseekersService {
         return blogPost;
     }
 
-    async editBlogPost(blogPostDetail: EditBlogPostDto, user: any, postID: number) {
+    async editBlogPost(blogPostDetails: EditBlogPostDto, user: any, postID: number) {
         const blogPost: BlogPostEntity = await BlogPostEntity.findOne({where: {id: postID}});
-        blogPost.title = blogPostDetail.title;
-        blogPost.text = blogPostDetail.text;
+        blogPost.title = blogPostDetails.title;
+        blogPost.text = blogPostDetails.text;
         return await BlogPostEntity.update(postID, blogPost);
     }
 
@@ -40,9 +42,9 @@ export class JobseekersService {
 
     // Project Operations
 
-    async addProject(projectDetail: CreateProjectDto, user: any) {
+    async addProject(projectDetails: CreateProjectDto, user: any) {
         const project: ProjectEntity = ProjectEntity.create();
-        const {title, deadline, type, size, description, skillGuarantee, subject} = projectDetail;
+        const {title, deadline, type, size, description, skillGuarantee, subject} = projectDetails;
 
         project.title = title;
         project.deadline = deadline;
@@ -57,10 +59,10 @@ export class JobseekersService {
         return project;
     }
 
-    async editProject(projectDetail: CreateProjectDto, user: any, projectID: number) {
+    async editProject(projectDetails: CreateProjectDto, user: any, projectID: number) {
         const project: ProjectEntity = await ProjectEntity.findOne({where: {id: projectID}});
 
-        const {title, deadline, type, size, description, skillGuarantee, subject} = projectDetail;
+        const {title, deadline, type, size, description, skillGuarantee, subject} = projectDetails;
 
         project.title = title;
         project.deadline = deadline;
@@ -79,5 +81,36 @@ export class JobseekersService {
 
     async getProject(projectID: number) {
         return await ProjectEntity.findOne({where: {id: projectID}});
+    }
+
+    // Resume Operations
+    async addResume(resumeDetails: CreateResumeDto, user: any) {
+        const resume: ResumeEntity = ResumeEntity.create();
+        const {name, text} = resumeDetails;
+
+        resume.name = name;
+        resume.text = text;
+        resume.isFor = user.userID;
+        await ResumeEntity.save(resume);
+        return resume;
+    }
+
+    async editResume(resumeDetails: CreateResumeDto, user: any) {
+        const userEntity: UserEntity = await UserEntity.findOne({where: {id:user.userID}, relations: ['resume']})
+        const {name, text} = resumeDetails;
+        userEntity.resume.name = name;
+        userEntity.resume.text = text;
+
+        return await ResumeEntity.update(userEntity.resume.id, userEntity.resume)
+    }
+
+    async deleteResume(user: any) {
+        const userEntity: UserEntity = await UserEntity.findOne({where: {id:user.userID}, relations: ['resume']})
+        return await ResumeEntity.delete(userEntity.resume.id);
+    }
+
+    async getResume(user: any) {
+        const userEntity: UserEntity = await UserEntity.findOne({where: {id:user.userID}, relations: ['resume']})
+        return userEntity.resume;
     }
 }

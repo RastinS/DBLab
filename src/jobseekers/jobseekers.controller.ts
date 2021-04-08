@@ -4,6 +4,8 @@ import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { Role } from 'src/enums/role.enum';
 import CreateBlogPostDto from './dto/create-blogPost.dto';
 import CreateProjectDto from './dto/create-Project.dto';
+import CreateResumeDto from './dto/create-resume.dto';
+import CreateResmueDto from './dto/create-resume.dto';
 import EditBlogPostDto from './dto/edit-blogPost.dto';
 import { JobseekersService } from './jobseekers.service';
 import { Roles } from './roles.decorator';
@@ -78,5 +80,38 @@ export class JobseekersController {
     @Roles(Role.Admin, Role.Employer)
     deleteProject(@Param('id', ParseIntPipe) projectID: number) {
         return this.jobseekersService.deleteProject(projectID);
+    }
+
+    // Resume Operations
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Get('resume')
+    @ApiBearerAuth('JWT')
+    @Roles(Role.Admin, Role.Freelancer)
+    getResume( @Request() req) {
+        return this.jobseekersService.getResume(req.user);
+    }
+
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Post('resume')
+    @ApiBearerAuth('JWT')
+    @Roles(Role.Admin, Role.Freelancer)
+    addResume(@Body() resumeDetails: CreateResumeDto, @Request() req) {
+        return this.jobseekersService.addResume(resumeDetails, req.user);
+    }
+
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Put('resume')
+    @ApiBearerAuth('JWT')
+    @Roles(Role.Admin, Role.Freelancer)
+    editResume(@Body() resumeDetails: CreateResumeDto, @Request() req) {
+        return this.jobseekersService.editResume(resumeDetails, req.user);
+    }
+
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Delete('resume')
+    @ApiBearerAuth('JWT')
+    @Roles(Role.Admin, Role.Freelancer)
+    deleteResume(@Request() req) {
+        return this.jobseekersService.deleteResume(req.user);
     }
 }
