@@ -10,6 +10,10 @@ async function bootstrap() {
   .setDescription('DB Lab #2')
   .setVersion('1.0')
   .addTag('database')
+  .addBearerAuth(
+    { type: 'http', in: 'header', scheme: 'bearer', bearerFormat: 'JWT' },
+    'JWT',
+  )
   .build();
   const document = SwaggerModule.createDocument(app, options);
   SwaggerModule.setup('/', app, document);

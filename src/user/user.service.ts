@@ -3,15 +3,27 @@ import UserEntity from '../db/entity/user.entity';
 import CreateUserDto from './dto/create-user.dto';
 import BookEntity from '../db/entity/book.entity';
 import {DeleteResult, getConnection} from "typeorm";
+import { Role } from '../enums/role.enum'
 
 @Injectable()
 export class UserServices {
 
   async insert(userDetails: CreateUserDto): Promise<UserEntity> {
     const userEntity: UserEntity = UserEntity.create();
-    const {username, password} = userDetails;
+    const {username, password, email, role, phoneNumber} = userDetails;
+
     userEntity.username = username;
     userEntity.password = password;
+    userEntity.email = email;
+
+    if (role == 'admin')
+      userEntity.roles = [Role.Admin];
+    else if (role == 'freelancer')
+      userEntity.roles = [Role.Freelancer];
+    else if (role == 'employer')
+      userEntity.roles = [Role.Employer];
+    
+    userEntity.phoneNumber = phoneNumber;
     await UserEntity.save(userEntity);
     return userEntity;
   }
