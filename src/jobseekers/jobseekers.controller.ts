@@ -4,9 +4,11 @@ import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { Role } from 'src/enums/role.enum';
 import CreateBlogPostDto from './dto/create-blogPost.dto';
 import CreateProjectDto from './dto/create-Project.dto';
+import CreateRateDto from './dto/create-rate.dto';
 import CreateResumeDto from './dto/create-resume.dto';
 import CreateResmueDto from './dto/create-resume.dto';
 import EditBlogPostDto from './dto/edit-blogPost.dto';
+import GetDeleteRateDto from './dto/get-delete-rate.dto';
 import { JobseekersService } from './jobseekers.service';
 import { Roles } from './roles.decorator';
 import { RolesGuard } from './roles.guard';
@@ -113,5 +115,38 @@ export class JobseekersController {
     @Roles(Role.Admin, Role.Freelancer)
     deleteResume(@Request() req) {
         return this.jobseekersService.deleteResume(req.user);
+    }
+
+    // Rate Operations
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Get('rate/:ratedID')
+    @ApiBearerAuth('JWT')
+    @Roles(Role.Admin, Role.Freelancer, Role.Employer)
+    getRate(@Param('ratedID', ParseIntPipe) ratedID: number, @Request() req) {
+        return this.jobseekersService.getRate(req.user, ratedID);
+    }
+
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Post('rate')
+    @ApiBearerAuth('JWT')
+    @Roles(Role.Admin, Role.Freelancer, Role.Employer)
+    addRate(@Body() rateDetails: CreateRateDto, @Request() req) {
+        return this.jobseekersService.addRate(rateDetails, req.user);
+    }
+
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Put('rate')
+    @ApiBearerAuth('JWT')
+    @Roles(Role.Admin, Role.Freelancer, Role.Employer)
+    editRate(@Body() rateDetails: CreateRateDto, @Request() req) {
+        return this.jobseekersService.editRate(rateDetails, req.user);
+    }
+
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Delete('rate/:ratedID')
+    @ApiBearerAuth('JWT')
+    @Roles(Role.Admin, Role.Freelancer, Role.Employer)
+    deleteRate(@Param('ratedID', ParseIntPipe) ratedID: number, @Request() req) {
+        return this.jobseekersService.deleteRate(req.user, ratedID);
     }
 }

@@ -9,36 +9,33 @@ import {ApiBearerAuth} from '@nestjs/swagger';
 export class UserController {
   constructor(private readonly usersServices: UserServices) {}
 
-//'postUser()' will handle the creating of new User
   @Post('post')
   postUser( @Body() user: CreateUserDto) {
     return this.usersServices.insert(user);
   }
-// 'getAll()' returns the list of all the existing users in the database
-  @ApiBearerAuth()
+
+  @ApiBearerAuth('JWT')
   @UseGuards(JwtAuthGuard)
   @Get()
   getAll() {
     return this.usersServices.getAllUsers();
   }
 
-//'getBooks()' return all the books which are associated with the user 
-// provided through 'userID' by the request
-  @ApiBearerAuth()
+  @ApiBearerAuth('JWT')
   @UseGuards(JwtAuthGuard)
   @Get('books')
   getBooks( @Body('userID', ParseIntPipe) userID: number ) {
     return this.usersServices.getBooksOfUser(userID);
   }
 
-  @ApiBearerAuth()
+  @ApiBearerAuth('JWT')
   @UseGuards(JwtAuthGuard)
   @Delete('delete/:id')
   deleteUser( @Param('id', ParseIntPipe) userID: number) {
     return this.usersServices.deleteUser(userID);
   }
 
-  @ApiBearerAuth()
+  @ApiBearerAuth('JWT')
   @UseGuards(JwtAuthGuard)
   @Put('put/:id')
   edituser(@Body() userDetails: CreateUserDto, @Param('id', ParseIntPipe) userID: number) {

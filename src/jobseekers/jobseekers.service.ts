@@ -1,10 +1,13 @@
 import { Injectable, Post } from '@nestjs/common';
 import BlogPostEntity from 'src/db/entity/blogPost.entity';
 import ProjectEntity from 'src/db/entity/project.entity';
+import RateEntity from 'src/db/entity/rate.entity';
+import rateEntity from 'src/db/entity/rate.entity';
 import ResumeEntity from 'src/db/entity/resume.entity';
 import UserEntity from 'src/db/entity/user.entity';
 import CreateBlogPostDto from './dto/create-blogPost.dto'
 import CreateProjectDto from './dto/create-Project.dto';
+import CreateRateDto from './dto/create-rate.dto';
 import CreateResumeDto from './dto/create-resume.dto';
 import EditBlogPostDto from './dto/edit-blogPost.dto';
 
@@ -112,5 +115,33 @@ export class JobseekersService {
     async getResume(user: any) {
         const userEntity: UserEntity = await UserEntity.findOne({where: {id:user.userID}, relations: ['resume']})
         return userEntity.resume;
+    }
+
+    // Rate Operations
+    async addRate(rateDetails: CreateRateDto, user: any) {
+        const rateEntity: RateEntity = RateEntity.create();
+        const {rate, ratedID} = rateDetails;
+
+        rateEntity.rate = rate;
+        rateEntity.ratedID = ratedID;
+        rateEntity.raterID = user.userID;
+        await RateEntity.save(rateEntity);
+        return rateEntity;
+    }
+
+    async editRate(rateDetails: CreateRateDto, user: any) {
+        const {rate, ratedID} = rateDetails;
+        const rateEntity: RateEntity = await RateEntity.findOne({where: {raterID:user.userID, ratedID:ratedID}})
+        rateEntity.rate = rate;
+
+        return await RateEntity.update({raterID:user.userID, ratedID:ratedID}, rateEntity)
+    }
+
+    async deleteRate(user: any, ratedID: number) {
+        return await RateEntity.delete({raterID:user.userID, ratedID:ratedID});
+    }
+
+    async getRate(user: any, ratedID: number) {
+        return await RateEntity.findOne({where: {raterID:user.userID, ratedID:ratedID}})
     }
 }

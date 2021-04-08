@@ -9,7 +9,7 @@ import {ApiBearerAuth} from '@nestjs/swagger';
 export default class BooksController {
   constructor(private readonly booksServices: BooksService) {}
 
-  @ApiBearerAuth()
+  @ApiBearerAuth('JWT')
   @UseGuards(JwtAuthGuard)
   @Post('post')
   postGenre( @Body() book: CreateBooksDto) {
@@ -21,14 +21,14 @@ export default class BooksController {
     return this.booksServices.getAllBooks();
   }
 
-  @ApiBearerAuth()
+  @ApiBearerAuth('JWT')
   @UseGuards(JwtAuthGuard)
   @Delete('delete/:id')
   deleteBook( @Param('id', ParseIntPipe) bookID : number) {
     return this.booksServices.deleteBook(bookID);
   }
 
-  @ApiBearerAuth()
+  @ApiBearerAuth('JWT')
   @UseGuards(JwtAuthGuard)
   @Put('put/:id')
   editBook(@Body() bookDetails: CreateBooksDto, @Param('id', ParseIntPipe) bookID: number) {

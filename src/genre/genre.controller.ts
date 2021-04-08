@@ -8,7 +8,7 @@ import {ApiBearerAuth} from '@nestjs/swagger';
 export default class GenreController {
   constructor(private readonly genreServices: GenreServices) {}
 
-  @ApiBearerAuth()
+  @ApiBearerAuth('JWT')
   @UseGuards(JwtAuthGuard)
   @Post('post')
   postGenre( @Body() genre: CreateGenreDto) {
@@ -20,14 +20,14 @@ export default class GenreController {
     return this.genreServices.getAllGenre();
   }
 
-  @ApiBearerAuth()
+  @ApiBearerAuth('JWT')
   @UseGuards(JwtAuthGuard)
   @Delete('delete/:id')
   deleteGenre( @Param('id', ParseIntPipe) genreID : number) {
     return this.genreServices.deleteGenre(genreID);
   }
 
-  @ApiBearerAuth()
+  @ApiBearerAuth('JWT')
   @UseGuards(JwtAuthGuard)
   @Put('put/:id')
   edituser(@Body() genreDetails: CreateGenreDto, @Param('id', ParseIntPipe) genreID: number) {
