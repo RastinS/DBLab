@@ -80,6 +80,10 @@ export class JobseekersService {
 
         if (project == undefined)
             throw new HttpException('Resource was not found', HttpStatus.NOT_FOUND);
+
+        if (project.employer != user.userID)
+            throw new HttpException('You are not the creator', HttpStatus.FORBIDDEN);
+
         const {title, deadline, type, size, description, skillGuarantee, subject} = projectDetails;
 
         project.title = title;
@@ -93,10 +97,14 @@ export class JobseekersService {
         return await ProjectEntity.update(projectID, project);
     }
 
-    async deleteProject(projectID: number) {
-        const res = await ProjectEntity.delete(projectID);
-        if (res.affected == 0)
+    async deleteProject(projectID: number, user: any) {
+        const project: ProjectEntity = await ProjectEntity.findOne({where: {id: projectID}});
+
+        if (project == undefined)
             throw new HttpException('Resource was not found', HttpStatus.NOT_FOUND);
+
+        if (project.employer != user.userID)
+            throw new HttpException('You are not the creator', HttpStatus.FORBIDDEN);
 
         return await ProjectEntity.delete(projectID);
     }
@@ -179,6 +187,13 @@ export class JobseekersService {
 
     async getRate(user: any, ratedID: number) {
         const rateEntity = await RateEntity.findOne({where: {raterID:user.userID, ratedID:ratedID}});
+        if (rateEntity == undefined)
+            throw new HttpException('Resource was not found', HttpStatus.NOT_FOUND);
+        return rateEntity;
+    }
+
+    async getAllUserRates(user:any) {
+        const rateEntity = await RateEntity.find({where: {ratedID:user.userID}});
         if (rateEntity == undefined)
             throw new HttpException('Resource was not found', HttpStatus.NOT_FOUND);
         return rateEntity;

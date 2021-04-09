@@ -19,13 +19,8 @@ export class JobseekersController {
 
     // Blog Post Operations
 
-    @UseGuards(JwtAuthGuard, RolesGuard)
-    @ApiResponse({ status: 401, description: 'Unauthorized' })
-    @ApiResponse({ status: 403, description: 'Forbidden resource' }) 
     @ApiResponse({ status: 404, description: 'Resource was not found' }) 
     @Get('blogPost/:id')
-    @ApiBearerAuth('JWT')
-    @Roles(Role.Admin)
     getBlogPost(@Param('id', ParseIntPipe) postID: number) {
         const blogPost = this.jobseekersService.getBlogPost(postID).finally();
         return blogPost;
@@ -75,7 +70,7 @@ export class JobseekersController {
     @ApiResponse({ status: 404, description: 'Resource was not found' }) 
     @Get('project/:id')
     @ApiBearerAuth('JWT')
-    @Roles(Role.Admin, Role.Employer)
+    @Roles(Role.Admin, Role.Employer, Role.Freelancer)
     getProject(@Param('id', ParseIntPipe) projectID: number) {
         return this.jobseekersService.getProject(projectID);
     }
@@ -92,7 +87,7 @@ export class JobseekersController {
 
     @UseGuards(JwtAuthGuard, RolesGuard)
     @ApiResponse({ status: 401, description: 'Unauthorized' }) 
-    @ApiResponse({ status: 403, description: 'Forbidden resource' })
+    @ApiResponse({ status: 403, description: 'Forbidden resource (Role or not being the owner)' })
     @ApiResponse({ status: 404, description: 'Resource was not found' })  
     @Put('project/:id')
     @ApiBearerAuth('JWT')
@@ -103,13 +98,13 @@ export class JobseekersController {
 
     @UseGuards(JwtAuthGuard, RolesGuard)
     @ApiResponse({ status: 401, description: 'Unauthorized' }) 
-    @ApiResponse({ status: 403, description: 'Forbidden resource' }) 
+    @ApiResponse({ status: 403, description: 'Forbidden resource (Role or not being the owner)' })
     @ApiResponse({ status: 404, description: 'Resource was not found' }) 
     @Delete('project/:id')
     @ApiBearerAuth('JWT')
     @Roles(Role.Admin, Role.Employer)
-    deleteProject(@Param('id', ParseIntPipe) projectID: number) {
-        return this.jobseekersService.deleteProject(projectID);
+    deleteProject(@Param('id', ParseIntPipe) projectID: number, @Request() req) {
+        return this.jobseekersService.deleteProject(projectID, req.user);
     }
 
     // Resume Operations
@@ -166,6 +161,17 @@ export class JobseekersController {
     @Roles(Role.Admin, Role.Freelancer, Role.Employer)
     getRate(@Param('ratedID', ParseIntPipe) ratedID: number, @Request() req) {
         return this.jobseekersService.getRate(req.user, ratedID);
+    }
+
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @ApiResponse({ status: 401, description: 'Unauthorized' })
+    @ApiResponse({ status: 403, description: 'Forbidden resource' })  
+    @ApiResponse({ status: 404, description: 'Resource was not found' }) 
+    @Get('rate')
+    @ApiBearerAuth('JWT')
+    @Roles(Role.Admin, Role.Freelancer, Role.Employer)
+    getAllUserRates(@Request() req) {
+        return this.jobseekersService.getAllUserRates(req.user);
     }
 
     @UseGuards(JwtAuthGuard, RolesGuard)
