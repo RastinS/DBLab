@@ -2,13 +2,14 @@ import { Body, Controller, Get, Post, Delete, Param, ParseIntPipe, Put, UseGuard
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import GenreServices from './genre.service';
 import CreateGenreDto from './dto/create-genre.dto';
-import {ApiBearerAuth} from '@nestjs/swagger';
+import {ApiBearerAuth, ApiResponse} from '@nestjs/swagger';
 
 @Controller('genre')
 export default class GenreController {
   constructor(private readonly genreServices: GenreServices) {}
 
   @ApiBearerAuth('JWT')
+  @ApiResponse({ status: 401, description: 'Unauthorized' }) 
   @UseGuards(JwtAuthGuard)
   @Post('post')
   postGenre( @Body() genre: CreateGenreDto) {
@@ -21,6 +22,7 @@ export default class GenreController {
   }
 
   @ApiBearerAuth('JWT')
+  @ApiResponse({ status: 401, description: 'Unauthorized' }) 
   @UseGuards(JwtAuthGuard)
   @Delete('delete/:id')
   deleteGenre( @Param('id', ParseIntPipe) genreID : number) {
@@ -28,6 +30,7 @@ export default class GenreController {
   }
 
   @ApiBearerAuth('JWT')
+  @ApiResponse({ status: 401, description: 'Unauthorized' }) 
   @UseGuards(JwtAuthGuard)
   @Put('put/:id')
   edituser(@Body() genreDetails: CreateGenreDto, @Param('id', ParseIntPipe) genreID: number) {

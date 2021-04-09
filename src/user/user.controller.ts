@@ -2,7 +2,7 @@ import { Body, Controller, Delete, Get, ParseIntPipe, Post, Put, Param, UseGuard
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { UserServices } from './user.service';
 import CreateUserDto from './dto/create-user.dto';
-import {ApiBearerAuth} from '@nestjs/swagger';
+import {ApiBearerAuth, ApiResponse} from '@nestjs/swagger';
 
 
 @Controller('users')
@@ -15,6 +15,7 @@ export class UserController {
   }
 
   @ApiBearerAuth('JWT')
+  @ApiResponse({ status: 401, description: 'Unauthorized' }) 
   @UseGuards(JwtAuthGuard)
   @Get()
   getAll() {
@@ -22,6 +23,7 @@ export class UserController {
   }
 
   @ApiBearerAuth('JWT')
+  @ApiResponse({ status: 401, description: 'Unauthorized' }) 
   @UseGuards(JwtAuthGuard)
   @Get('books')
   getBooks( @Body('userID', ParseIntPipe) userID: number ) {
@@ -29,6 +31,7 @@ export class UserController {
   }
 
   @ApiBearerAuth('JWT')
+  @ApiResponse({ status: 401, description: 'Unauthorized' }) 
   @UseGuards(JwtAuthGuard)
   @Delete('delete/:id')
   deleteUser( @Param('id', ParseIntPipe) userID: number) {
@@ -36,6 +39,7 @@ export class UserController {
   }
 
   @ApiBearerAuth('JWT')
+  @ApiResponse({ status: 401, description: 'Unauthorized' }) 
   @UseGuards(JwtAuthGuard)
   @Put('put/:id')
   edituser(@Body() userDetails: CreateUserDto, @Param('id', ParseIntPipe) userID: number) {

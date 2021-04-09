@@ -1,4 +1,4 @@
-import { Injectable, Post } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, Post } from '@nestjs/common';
 import BlogPostEntity from 'src/db/entity/blogPost.entity';
 import ProjectEntity from 'src/db/entity/project.entity';
 import RateEntity from 'src/db/entity/rate.entity';
@@ -30,18 +30,31 @@ export class JobseekersService {
 
     async editBlogPost(blogPostDetails: EditBlogPostDto, user: any, postID: number) {
         const blogPost: BlogPostEntity = await BlogPostEntity.findOne({where: {id: postID}});
+        if (blogPost == undefined)
+            throw new HttpException('Resource was not found', HttpStatus.NOT_FOUND);
+        
         blogPost.title = blogPostDetails.title;
         blogPost.text = blogPostDetails.text;
         return await BlogPostEntity.update(postID, blogPost);
     }
 
     async deleteBlogPost(postID: number) {
-        return await BlogPostEntity.delete(postID);
+        const res = await BlogPostEntity.delete(postID);
+        if (res.affected == 0)
+            throw new HttpException('Resource was not found', HttpStatus.NOT_FOUND);
+        return ;
     }
 
     async getBlogPost(postID: number) {
-        return await BlogPostEntity.findOne({where: {id: postID}});
+        const blogPost = await BlogPostEntity.findOne({where: {id: postID}});
+        if (blogPost == undefined)
+            throw new HttpException('Resource was not found', HttpStatus.NOT_FOUND);
+        return blogPost;
     }
+
+    async getAllPosts() {
+        return await BlogPostEntity.find();
+      }
 
     // Project Operations
 
@@ -65,6 +78,8 @@ export class JobseekersService {
     async editProject(projectDetails: CreateProjectDto, user: any, projectID: number) {
         const project: ProjectEntity = await ProjectEntity.findOne({where: {id: projectID}});
 
+        if (project == undefined)
+            throw new HttpException('Resource was not found', HttpStatus.NOT_FOUND);
         const {title, deadline, type, size, description, skillGuarantee, subject} = projectDetails;
 
         project.title = title;
@@ -79,11 +94,18 @@ export class JobseekersService {
     }
 
     async deleteProject(projectID: number) {
+        const res = await ProjectEntity.delete(projectID);
+        if (res.affected == 0)
+            throw new HttpException('Resource was not found', HttpStatus.NOT_FOUND);
+
         return await ProjectEntity.delete(projectID);
     }
 
     async getProject(projectID: number) {
-        return await ProjectEntity.findOne({where: {id: projectID}});
+        const project = await ProjectEntity.findOne({where: {id: projectID}});
+        if (project == undefined)
+            throw new HttpException('Resource was not found', HttpStatus.NOT_FOUND);
+        return project;
     }
 
     // Resume Operations
@@ -100,6 +122,9 @@ export class JobseekersService {
 
     async editResume(resumeDetails: CreateResumeDto, user: any) {
         const userEntity: UserEntity = await UserEntity.findOne({where: {id:user.userID}, relations: ['resume']})
+        if (userEntity.resume == undefined)
+            throw new HttpException('Resource was not found', HttpStatus.NOT_FOUND);
+
         const {name, text} = resumeDetails;
         userEntity.resume.name = name;
         userEntity.resume.text = text;
@@ -109,11 +134,16 @@ export class JobseekersService {
 
     async deleteResume(user: any) {
         const userEntity: UserEntity = await UserEntity.findOne({where: {id:user.userID}, relations: ['resume']})
+        if (userEntity.resume == undefined)
+            throw new HttpException('Resource was not found', HttpStatus.NOT_FOUND);
+
         return await ResumeEntity.delete(userEntity.resume.id);
     }
 
     async getResume(user: any) {
         const userEntity: UserEntity = await UserEntity.findOne({where: {id:user.userID}, relations: ['resume']})
+        if (userEntity.resume == undefined)
+            throw new HttpException('Resource was not found', HttpStatus.NOT_FOUND);
         return userEntity.resume;
     }
 
@@ -132,16 +162,25 @@ export class JobseekersService {
     async editRate(rateDetails: CreateRateDto, user: any) {
         const {rate, ratedID} = rateDetails;
         const rateEntity: RateEntity = await RateEntity.findOne({where: {raterID:user.userID, ratedID:ratedID}})
+        if (rateEntity == undefined)
+            throw new HttpException('Resource was not found', HttpStatus.NOT_FOUND);
+
         rateEntity.rate = rate;
 
-        return await RateEntity.update({raterID:user.userID, ratedID:ratedID}, rateEntity)
+        return await RateEntity.update({raterID:user.userID, ratedID:ratedID}, rateEntity);
     }
 
     async deleteRate(user: any, ratedID: number) {
-        return await RateEntity.delete({raterID:user.userID, ratedID:ratedID});
+        const res = await RateEntity.delete({raterID:user.userID, ratedID:ratedID});
+        if (res.affected == 0)
+            throw new HttpException('Resource was not found', HttpStatus.NOT_FOUND);
+        return res;
     }
 
     async getRate(user: any, ratedID: number) {
-        return await RateEntity.findOne({where: {raterID:user.userID, ratedID:ratedID}})
+        const rateEntity = await RateEntity.findOne({where: {raterID:user.userID, ratedID:ratedID}});
+        if (rateEntity == undefined)
+            throw new HttpException('Resource was not found', HttpStatus.NOT_FOUND);
+        return rateEntity;
     }
 }

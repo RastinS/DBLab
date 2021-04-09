@@ -1,5 +1,5 @@
 import { Body, Controller, Post, UseGuards, Request, Put, Param, ParseIntPipe, Delete, Get } from '@nestjs/common';
-import { ApiBearerAuth } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiResponse } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { Role } from 'src/enums/role.enum';
 import CreateBlogPostDto from './dto/create-blogPost.dto';
@@ -20,14 +20,25 @@ export class JobseekersController {
     // Blog Post Operations
 
     @UseGuards(JwtAuthGuard, RolesGuard)
+    @ApiResponse({ status: 401, description: 'Unauthorized' })
+    @ApiResponse({ status: 403, description: 'Forbidden resource' }) 
+    @ApiResponse({ status: 404, description: 'Resource was not found' }) 
     @Get('blogPost/:id')
     @ApiBearerAuth('JWT')
     @Roles(Role.Admin)
     getBlogPost(@Param('id', ParseIntPipe) postID: number) {
-        return this.jobseekersService.getBlogPost(postID);
+        const blogPost = this.jobseekersService.getBlogPost(postID).finally();
+        return blogPost;
+    }
+
+    @Get('blogPost')
+    getAll() {
+        return this.jobseekersService.getAllPosts();
     }
 
     @UseGuards(JwtAuthGuard, RolesGuard)
+    @ApiResponse({ status: 401, description: 'Unauthorized' }) 
+    @ApiResponse({ status: 403, description: 'Forbidden resource' }) 
     @Post('blogPost')
     @ApiBearerAuth('JWT')
     @Roles(Role.Admin)
@@ -36,6 +47,9 @@ export class JobseekersController {
     }
 
     @UseGuards(JwtAuthGuard, RolesGuard)
+    @ApiResponse({ status: 401, description: 'Unauthorized' }) 
+    @ApiResponse({ status: 403, description: 'Forbidden resource' }) 
+    @ApiResponse({ status: 404, description: 'Resource was not found' }) 
     @Put('blogPost/:id')
     @ApiBearerAuth('JWT')
     @Roles(Role.Admin)
@@ -44,6 +58,9 @@ export class JobseekersController {
     }
 
     @UseGuards(JwtAuthGuard, RolesGuard)
+    @ApiResponse({ status: 401, description: 'Unauthorized' }) 
+    @ApiResponse({ status: 403, description: 'Forbidden resource' }) 
+    @ApiResponse({ status: 404, description: 'Resource was not found' }) 
     @Delete('blogPost/:id')
     @ApiBearerAuth('JWT')
     @Roles(Role.Admin)
@@ -53,6 +70,9 @@ export class JobseekersController {
 
     // Project Operations
     @UseGuards(JwtAuthGuard, RolesGuard)
+    @ApiResponse({ status: 401, description: 'Unauthorized' }) 
+    @ApiResponse({ status: 403, description: 'Forbidden resource' }) 
+    @ApiResponse({ status: 404, description: 'Resource was not found' }) 
     @Get('project/:id')
     @ApiBearerAuth('JWT')
     @Roles(Role.Admin, Role.Employer)
@@ -61,6 +81,8 @@ export class JobseekersController {
     }
 
     @UseGuards(JwtAuthGuard, RolesGuard)
+    @ApiResponse({ status: 401, description: 'Unauthorized' }) 
+    @ApiResponse({ status: 403, description: 'Forbidden resource' }) 
     @Post('project')
     @ApiBearerAuth('JWT')
     @Roles(Role.Admin, Role.Employer)
@@ -69,6 +91,9 @@ export class JobseekersController {
     }
 
     @UseGuards(JwtAuthGuard, RolesGuard)
+    @ApiResponse({ status: 401, description: 'Unauthorized' }) 
+    @ApiResponse({ status: 403, description: 'Forbidden resource' })
+    @ApiResponse({ status: 404, description: 'Resource was not found' })  
     @Put('project/:id')
     @ApiBearerAuth('JWT')
     @Roles(Role.Admin, Role.Employer)
@@ -77,6 +102,9 @@ export class JobseekersController {
     }
 
     @UseGuards(JwtAuthGuard, RolesGuard)
+    @ApiResponse({ status: 401, description: 'Unauthorized' }) 
+    @ApiResponse({ status: 403, description: 'Forbidden resource' }) 
+    @ApiResponse({ status: 404, description: 'Resource was not found' }) 
     @Delete('project/:id')
     @ApiBearerAuth('JWT')
     @Roles(Role.Admin, Role.Employer)
@@ -86,6 +114,9 @@ export class JobseekersController {
 
     // Resume Operations
     @UseGuards(JwtAuthGuard, RolesGuard)
+    @ApiResponse({ status: 401, description: 'Unauthorized' }) 
+    @ApiResponse({ status: 403, description: 'Forbidden resource' }) 
+    @ApiResponse({ status: 404, description: 'Resource was not found' }) 
     @Get('resume')
     @ApiBearerAuth('JWT')
     @Roles(Role.Admin, Role.Freelancer)
@@ -94,6 +125,8 @@ export class JobseekersController {
     }
 
     @UseGuards(JwtAuthGuard, RolesGuard)
+    @ApiResponse({ status: 401, description: 'Unauthorized' }) 
+    @ApiResponse({ status: 403, description: 'Forbidden resource' }) 
     @Post('resume')
     @ApiBearerAuth('JWT')
     @Roles(Role.Admin, Role.Freelancer)
@@ -102,6 +135,9 @@ export class JobseekersController {
     }
 
     @UseGuards(JwtAuthGuard, RolesGuard)
+    @ApiResponse({ status: 401, description: 'Unauthorized' }) 
+    @ApiResponse({ status: 403, description: 'Forbidden resource' }) 
+    @ApiResponse({ status: 404, description: 'Resource was not found' }) 
     @Put('resume')
     @ApiBearerAuth('JWT')
     @Roles(Role.Admin, Role.Freelancer)
@@ -110,6 +146,9 @@ export class JobseekersController {
     }
 
     @UseGuards(JwtAuthGuard, RolesGuard)
+    @ApiResponse({ status: 401, description: 'Unauthorized' }) 
+    @ApiResponse({ status: 403, description: 'Forbidden resource' }) 
+    @ApiResponse({ status: 404, description: 'Resource was not found' }) 
     @Delete('resume')
     @ApiBearerAuth('JWT')
     @Roles(Role.Admin, Role.Freelancer)
@@ -119,6 +158,9 @@ export class JobseekersController {
 
     // Rate Operations
     @UseGuards(JwtAuthGuard, RolesGuard)
+    @ApiResponse({ status: 401, description: 'Unauthorized' })
+    @ApiResponse({ status: 403, description: 'Forbidden resource' })  
+    @ApiResponse({ status: 404, description: 'Resource was not found' }) 
     @Get('rate/:ratedID')
     @ApiBearerAuth('JWT')
     @Roles(Role.Admin, Role.Freelancer, Role.Employer)
@@ -127,6 +169,8 @@ export class JobseekersController {
     }
 
     @UseGuards(JwtAuthGuard, RolesGuard)
+    @ApiResponse({ status: 401, description: 'Unauthorized' }) 
+    @ApiResponse({ status: 403, description: 'Forbidden resource' }) 
     @Post('rate')
     @ApiBearerAuth('JWT')
     @Roles(Role.Admin, Role.Freelancer, Role.Employer)
@@ -135,6 +179,9 @@ export class JobseekersController {
     }
 
     @UseGuards(JwtAuthGuard, RolesGuard)
+    @ApiResponse({ status: 401, description: 'Unauthorized' }) 
+    @ApiResponse({ status: 403, description: 'Forbidden resource' }) 
+    @ApiResponse({ status: 404, description: 'Resource was not found' }) 
     @Put('rate')
     @ApiBearerAuth('JWT')
     @Roles(Role.Admin, Role.Freelancer, Role.Employer)
@@ -143,6 +190,9 @@ export class JobseekersController {
     }
 
     @UseGuards(JwtAuthGuard, RolesGuard)
+    @ApiResponse({ status: 401, description: 'Unauthorized' }) 
+    @ApiResponse({ status: 403, description: 'Forbidden resource' }) 
+    @ApiResponse({ status: 404, description: 'Resource was not found' }) 
     @Delete('rate/:ratedID')
     @ApiBearerAuth('JWT')
     @Roles(Role.Admin, Role.Freelancer, Role.Employer)
